@@ -26,12 +26,13 @@ class Burger(models.Model):
 		(WELL_DONE, "Well done")
 	), default=MEDIUM)
 
+	bacon = models.BooleanField(default=True)
 	tomatoes = models.BooleanField(default=True)
 	cucumber = models.BooleanField(default=True)
 	cabbage = models.BooleanField(default=True)
 
 	# Order 
-	# Link to 'Order' model
+	order = models.ForeignKey('Order')
 
 
 class Order(models.Model):

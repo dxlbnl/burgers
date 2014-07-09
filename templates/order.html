@@ -1,9 +1,84 @@
-{% extends "base.html" %}
+{% load staticfiles %}
+<!doctype html>
+
+<meta charset="utf-8"/>
+
+<link href='http://fonts.googleapis.com/css?family=Dosis:200,400|Lobster+Two:400,700' rel='stylesheet' type='text/css'>
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+	body {
+		font-family: "Dosis";
+	}
+
+	.navbar {
+		font-family: "Lobster two"
+	}
+
+	.burgers {
+		padding: 15px;
+	}
+
+	.burgers .row {
+		margin: 5px;
+	}
+
+	.btn-primary {
+		background-color: #8AA2B6;
+		border-color: #757C83;
+	}
+
+	.btn-primary:active, .btn-primary.active {
+		background-color: #3071a9;
+		border-color: #285e8e;
+	}
+
+</style>
+
+<div class='container'>
+	<nav class='navbar navbar-default'>
+		<div class='container-fluid'>
+			<div class='navbar-header'>
+				<a class='navbar-brand' href="/">Burgers</a>
+			</div>
+		</div>
+	</nav>
+
+	<main ng-app="order">
+		{% verbatim %}
+		<div class='container' ng-controller="OrderCtrl">
+			<div class='control'>
+				<button type="button" ng-click='add_burger()' class="btn">{{(burgers.length) ? "More burgers." : "Add a burger."}}</button>
+			</div>
+
+			<div class='burgers'>
+				<div class='row' ng-repeat='burger in burgers'>
+					<form class='form-inline'>
+						<select ng-model='burger.meat' class='form-control'>
+							<option ng-repeat="(key, value) in OPTIONS.meat" value="{{key}}">{{value}}</option>
+						</select>
+						<select ng-model='burger.cheese' class='form-control'>
+							<option ng-repeat="(key, value) in OPTIONS.cheese" value="{{key}}">{{value}}</option>
+						</select>
+						<div class='btn-group'>
+							<label class='btn btn-primary' ng-model="burger.bacon" btn-checkbox>bacon</label>
+							<label class='btn btn-primary' ng-model="burger.tomatoes" btn-checkbox>tomatoes</label>
+							<label class='btn btn-primary' ng-model="burger.cucumber" btn-checkbox>cucumber</label>
+							<label class='btn btn-primary' ng-model="burger.cabbage" btn-checkbox>cabbage</label>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		{% endverbatim %}
+	</main>
+</div>
 
 
-{% block main %}
-Welcome
-{% endblock %}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>
 
-
+<script src="{% static "angular-ui-bootstrap.js" %}"></script>
+<script src="{% static "app.js" %}"></script>
