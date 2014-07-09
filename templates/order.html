@@ -17,10 +17,11 @@
 
 	.burgers {
 		padding: 15px;
+		border-radius: 10px;
 	}
 
-	.burgers .row {
-		margin: 5px;
+	.burgers .burger {
+		margin: 15px;
 	}
 
 	.burger .btn-primary {
@@ -51,11 +52,12 @@
 	<main ng-app="order">
 		{% verbatim %}
 		<div class='container' ng-controller="OrderCtrl">
-			<div class='control'>
-				<button type="button" ng-click='add_burger()' class="btn btn-success">{{(burgers.length) ? "More burgers." : "Add a burger."}}</button>
-			</div>
+			<h3>1. Create some burgers.</h3>
 
 			<div class='burgers'>
+				<div class='control'>
+					<button type="button" ng-click='add_burger()' class="btn btn-success">{{(burgers.length) ? "More burgers." : "Add a burger."}}</button>
+				</div>
 				<div class='burger' ng-repeat='burger in burgers'>
 					<form class='form-inline'>
 						<select ng-model='burger.meat' class='form-control'>
@@ -72,12 +74,57 @@
 						</div>
 
 						<span class='right'>
-							<label>{{price(burger) | currency : "€"}}</label>
+
+							<div class='input-group'>
+								<label class='input-group-addon' for='addrName'>Price: </label>
+								<input id='addrName' class='form-control' type='text' disabled value='{{price(burger) | currency : "€"}}'/>
+							</div>
 							<label class='remove btn btn-danger' ng-click="burgers.splice($index,1)">Remove</label>
 						</span>
 					</form>
 				</div>
-				<span>Total: {{total() | currency: "€"}}</span>
+			</div>
+
+			<h3>2. Fill in contact details.</h3>
+			<div class='form-horizontal'>
+				<div class='form-group'>
+					<label class='col-sm-2 control-label' for='addrName'>Name:</label>
+					<div class='col-sm-10'>
+						<input ng-model="address.name" required id='addrName' class='form-control' type='text' maxlength='20'/>
+					</div>
+				</div>
+				<div class='form-group'>
+					<label class='col-sm-2 control-label' for='addrStreet'>Street:</label>
+					<div class='col-sm-10'>
+						<input ng-model="address.street" required id='addrStreet' class='form-control' type='text' maxlength='50'/>
+					</div>
+				</div>
+				<div class='form-group'>
+					<label class='col-sm-2 control-label' for='addrPlace'>Place:</label>
+					<div class='col-sm-10'>
+						<input ng-model="address.place" required id='addrPlace' class='form-control' type='text' maxlength='30'/>
+					</div>
+				</div>
+				<div class='form-group'>
+					<label class='col-sm-2 control-label' for='addrPostal'>Postal:</label>
+					<div class='col-sm-10'>
+						<input ng-model="address.postal" required id='addrPostal' class='form-control' type='text' maxlength='8'/>
+					</div>
+				</div>
+			</div>
+
+			<h3>3. Accept the order.</h3>
+			<div class='order  col-sm-3'>
+				<div class='input-group'>
+					<label class='input-group-addon' for='addrName'>Price: </label>
+					<input id='addrName' class='form-control' type='text' disabled value='{{total() | currency : "€"}}'/>
+				</div>
+			</div>
+			<div class='col-sm-3'>
+				<button class='btn btn-lg btn-success' ng-click="order()">Order!</button>
+			</div>
+			<div class='col-sm-6'>
+				{{ordered | json}}
 			</div>
 		</div>
 		{% endverbatim %}

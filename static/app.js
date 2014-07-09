@@ -28,14 +28,17 @@ var app = angular.module('order', ['ui.bootstrap'])
 			tomatoes: 0.10,
 			cucumber: 0.10,
 			cabbage: 0.10,
-		}
+		};
 		$scope.burgers = [{
 				cheese: "CHEESE",
 				meat: "MEDIUM",
 				tomatoes: true,
 				cucumber: true,
 				cabbage: true
-			}]
+			}];
+
+		$scope.address = { "name": "Dexter", "street": "Klopsteen 8", "place": "Den Haag", "postal": "2496SM" };
+		$scope.ordered = {};
 
 		$scope.add_burger = function () {
 			$scope.burgers.push({
@@ -67,11 +70,16 @@ var app = angular.module('order', ['ui.bootstrap'])
 			return price
 		}
 		$scope.total = function () {
-			return _.reduce(
-						_.map($scope.burgers, $scope.price), 
-						function (a, b) {return a+b}, 0
-					)
+			var burgers = _.map($scope.burgers, $scope.price);
+
+
+			return _.reduce(burgers, function (a, b) {return a+b}, 0)
 		}
 
-		$scope.order = function () {}
+		$scope.order = function () {
+			$scope.ordered = {
+				burgers: angular.copy($scope.burgers),
+				address: angular.copy($scope.address)
+			}
+		}
 	});
