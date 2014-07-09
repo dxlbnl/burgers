@@ -6,44 +6,45 @@ var app = angular.module('order', ['ui.bootstrap'])
 	.controller('OrderCtrl', function ($scope) {
 		$scope.OPTIONS = {
 			meat: {
-				RARE: "Rare",
-				MEDIUM: "Medium",
-				WELL_DONE: "Well done"
+				R: "Rare",
+				M: "Medium",
+				W: "Well done"
 			}, 
 			cheese: {
-				NO_CHEESE: "No cheese",
-				CHEESE:  "Cheese",
-				DOUBLE_CHEESE: "Double cheese"
+				NC: "No cheese",
+				C:  "Cheese",
+				DC: "Double cheese"
 			}
 		};
 		$scope.pricing_scheme = {
 			base_price: 2.00,
 			meat: 2.00,
 			cheese: {
-				NO_CHEESE: 0.00,
-				CHEESE: 0.20,
-				DOUBLE_CHEESE: 0.40
+				NC: 0.00,
+				C: 0.20,
+				DC: 0.40
 			},
 			bacon: 0.50,
 			tomatoes: 0.10,
 			cucumber: 0.10,
 			cabbage: 0.10,
 		};
-		$scope.burgers = [{
-				cheese: "CHEESE",
-				meat: "MEDIUM",
+
+		$scope.order = {
+			address : { "name": "Dexter", "street": "Klopsteen 8", "place": "Den Haag", "postal": "2496SM" },
+			burgers : [{
+				cheese: "C",
+				meat: "M",
 				tomatoes: true,
 				cucumber: true,
 				cabbage: true
-			}];
-
-		$scope.address = { "name": "Dexter", "street": "Klopsteen 8", "place": "Den Haag", "postal": "2496SM" };
-		$scope.ordered = {};
+			}]
+		};
 
 		$scope.add_burger = function () {
-			$scope.burgers.push({
-				cheese: "CHEESE",
-				meat: "MEDIUM",
+			$scope.order.burgers.push({
+				cheese: "C",
+				meat: "M",
 				tomatoes: true,
 				cucumber: true,
 				cabbage: true
@@ -70,16 +71,9 @@ var app = angular.module('order', ['ui.bootstrap'])
 			return price
 		}
 		$scope.total = function () {
-			var burgers = _.map($scope.burgers, $scope.price);
+			var burgers = _.map($scope.order.burgers, $scope.price);
 
 
 			return _.reduce(burgers, function (a, b) {return a+b}, 0)
-		}
-
-		$scope.order = function () {
-			$scope.ordered = {
-				burgers: angular.copy($scope.burgers),
-				address: angular.copy($scope.address)
-			}
 		}
 	});

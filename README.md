@@ -14,6 +14,7 @@ Todo
  - Add ingredient control
  - Some Customer views, adding orders, viewing status
  - Some manager views, changing orders. 
+ - Location validation, (dynamic distance check? ;)
 
 Install environment
 ===================
