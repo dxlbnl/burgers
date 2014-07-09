@@ -1,0 +1,38 @@
+<!doctype html>
+
+<meta charset="utf-8"/>
+
+<link href='http://fonts.googleapis.com/css?family=Dosis:200,400|Lobster+Two:400,700' rel='stylesheet' type='text/css'>
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+	body {
+		font-family: "Dosis";
+	}
+
+	.navbar {
+		font-family: "Lobster two"
+	}
+</style>
+
+<div class='container'>
+	<nav class='navbar navbar-default'>
+		<div class='container-fluid'>
+			<div class='navbar-header'>
+				<a class='navbar-brand' href="/">Burgers</a>
+			</div>
+		</div>
+	</nav>
+
+	<main>
+		{% block main %}
+			It's all about burgers
+		{% endblock %}
+	</main>
+</div>
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+<!-- <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script> -->

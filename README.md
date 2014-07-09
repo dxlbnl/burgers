@@ -8,7 +8,7 @@ Built in Django
 
 Todo
 ====
- - Create the burger model
+ - Write Tests
  - Some Customer views, adding orders
  - Some manager views, changing orders. 
 
