@@ -1,5 +1,36 @@
 from django.db import models
 
+
+# A Fieldtype to store lists, decrease database complexity.
+class ListField(models.TextField):
+    __metaclass__ = models.SubfieldBase
+    description = "Stores a python list"
+
+    def __init__(self, *args, **kwargs):
+        super(ListField, self).__init__(*args, **kwargs)
+
+    def to_python(self, value):
+        if not value:
+            value = []
+
+        if isinstance(value, list):
+            return value
+
+        return ast.literal_eval(value)
+
+    def get_prep_value(self, value):
+        if value is None:
+            return value
+
+        return unicode(value)
+
+    def value_to_string(self, obj):
+        value = self._get_val_from_obj(obj)
+        return self.get_db_prep_value(value)
+
+
+
+
 # Create your models here.
 
 
@@ -26,13 +57,22 @@ class Burger(models.Model):
 		(WELL_DONE, "Well done")
 	), default=MEDIUM)
 
-	bacon = models.BooleanField(default=True)
-	tomatoes = models.BooleanField(default=True)
-	cucumber = models.BooleanField(default=True)
-	cabbage = models.BooleanField(default=True)
+	bacon = models.BooleanField(default=False)
+	tomatoes = models.BooleanField(default=False)
+	cucumber = models.BooleanField(default=False)
+	cabbage = models.BooleanField(default=False)
 
 	# Order 
 	order = models.ForeignKey('Order')
+
+
+
+class IngredientType(models.Model):
+	"""IngredientType"""
+
+	name = models.CharField(max_length=20)
+
+
 
 
 class Order(models.Model):
@@ -56,3 +96,7 @@ class Order(models.Model):
 		(ON_THE_ROAD, "On the road"),
 		(DELIVERED, "Delivered")
 	), default=ORDERED)
+
+
+	def get_absolute_url(self):
+	    return "/order/{}/".format(self.id)

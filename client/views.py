@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.shortcuts import redirect
 
 from client.models import Burger, Order
 
@@ -8,13 +9,11 @@ import json
 
 
 def index(request):
-	context = {
-	}
-
-	return render(request, "order.html", context)
+	return render(request, "order.html")
 
 
-def order(request):
+def order(request, order_id=None):
+	"""Processes an order, or returns an existing one."""
 
 	if request.POST:
 		# Create the order
@@ -23,6 +22,7 @@ def order(request):
 
 		# Just let it run, and catch failures. (Validation ?)
 		order = Order(**address)
+		order.save()
 		
 
 		for burger in burgers:
@@ -32,10 +32,18 @@ def order(request):
 			burger_model.save()
 
 
+		return redirect(order)
+
+	elif order_id:
+		return HttpResponse(json.dumps({
+			'burgers' : burgers,
+			'address' : address
+		}),mimetype='application/json')
+
+	else:
+		return redirect('index')
 
 
-
-	return HttpResponse(json.dumps({
-		'burgers' : burgers,
-		'address' : address
-	}),mimetype='application/json')
+def options(request):
+	"""Returns the burger options, ingredients, pricing enz."""
+	pass

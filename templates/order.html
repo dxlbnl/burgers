@@ -127,8 +127,8 @@
 					{% csrf_token %}
 				{% verbatim %}
 
-				<input type='hidden' name="address" value="{{order.address | json}}"/>
-				<input type='hidden' name="burgers" value="{{order.burgers | json}}"/>
+				<input type='hidden' name="address" value="{{order.address}}"/>
+				<input type='hidden' name="burgers" value="{{order.burgers}}"/>
 				<div class='col-sm-3'>
 					<button type="submit" class='btn btn-lg btn-success' ng-click="order()">Order!</button>
 				</div>
