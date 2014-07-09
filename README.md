@@ -6,6 +6,12 @@ A burger order application
 Built in Django
 
 
+Todo
+====
+ - Create the burger model
+ - Some Customer views, adding orders
+ - Some manager views, changing orders. 
+
 Install environment
 ===================
 pip install django
