@@ -31,39 +31,6 @@ class ListField(models.TextField):
 
 
 
-# Create your models here.
-
-
-class Burger(models.Model):
-	"""The burger model, created with some initial ingredients"""
-
-	# Ingredients
-	NO_CHEESE = "NC"
-	CHEESE = "C"
-	DOUBLE_CHEESE = "DC"
-
-	RARE = "R"
-	MEDIUM = "M"
-	WELL_DONE = "W"
-
-	cheese = models.CharField(max_length=2, choices=(
-		(NO_CHEESE, "No cheese"),
-		(CHEESE, "cheese"),
-		(DOUBLE_CHEESE, "Double cheese")
-	), default=CHEESE)
-	meat = models.CharField(max_length=1, choices=(
-		(RARE, "Rare"),
-		(MEDIUM, "Medium"),
-		(WELL_DONE, "Well done")
-	), default=MEDIUM)
-
-	bacon = models.BooleanField(default=False)
-	tomatoes = models.BooleanField(default=False)
-	cucumber = models.BooleanField(default=False)
-	cabbage = models.BooleanField(default=False)
-
-	# Order 
-	order = models.ForeignKey('Order')
 
 
 
@@ -71,7 +38,13 @@ class IngredientType(models.Model):
 	"""IngredientType"""
 
 	name = models.CharField(max_length=20)
+	options = ListField()
 
+
+class Ingredient(models.Model):
+
+	type = models.ForeignKey(IngredientType)
+	value = models.CharField(max_length=80)
 
 
 
@@ -100,3 +73,39 @@ class Order(models.Model):
 
 	def get_absolute_url(self):
 	    return "/order/{}/".format(self.id)
+
+
+
+
+class Burger(models.Model):
+	"""The Burger """
+
+	ingredients = models.ManyToManyField(Ingredient)
+
+	# Ingredients
+	NO_CHEESE = "NC"
+	CHEESE = "C"
+	DOUBLE_CHEESE = "DC"
+
+	RARE = "R"
+	MEDIUM = "M"
+	WELL_DONE = "W"
+
+	cheese = models.CharField(max_length=2, choices=(
+		(NO_CHEESE, "No cheese"),
+		(CHEESE, "cheese"),
+		(DOUBLE_CHEESE, "Double cheese")
+	), default=CHEESE)
+	meat = models.CharField(max_length=1, choices=(
+		(RARE, "Rare"),
+		(MEDIUM, "Medium"),
+		(WELL_DONE, "Well done")
+	), default=MEDIUM)
+
+	bacon = models.BooleanField(default=False)
+	tomatoes = models.BooleanField(default=False)
+	cucumber = models.BooleanField(default=False)
+	cabbage = models.BooleanField(default=False)
+
+	# Order 
+	order = models.ForeignKey('Order')
