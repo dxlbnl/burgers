@@ -9,7 +9,9 @@ Built in Django
 Todo
 ====
  - Write Tests
- - Some Customer views, adding orders
+ - Add a pricing scheme
+ - Add sauce control
+ - Some Customer views, adding orders, viewing status
  - Some manager views, changing orders. 
 
 Install environment
