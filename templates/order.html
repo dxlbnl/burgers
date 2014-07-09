@@ -23,14 +23,18 @@
 		margin: 5px;
 	}
 
-	.btn-primary {
+	.burger .btn-primary {
 		background-color: #8AA2B6;
 		border-color: #757C83;
 	}
 
-	.btn-primary:active, .btn-primary.active {
+	.burger .btn-primary:active, .burger .btn-primary.active {
 		background-color: #3071a9;
 		border-color: #285e8e;
+	}
+
+	.burger .right {
+		float: right;
 	}
 
 </style>
@@ -48,11 +52,11 @@
 		{% verbatim %}
 		<div class='container' ng-controller="OrderCtrl">
 			<div class='control'>
-				<button type="button" ng-click='add_burger()' class="btn">{{(burgers.length) ? "More burgers." : "Add a burger."}}</button>
+				<button type="button" ng-click='add_burger()' class="btn btn-success">{{(burgers.length) ? "More burgers." : "Add a burger."}}</button>
 			</div>
 
 			<div class='burgers'>
-				<div class='row' ng-repeat='burger in burgers'>
+				<div class='burger' ng-repeat='burger in burgers'>
 					<form class='form-inline'>
 						<select ng-model='burger.meat' class='form-control'>
 							<option ng-repeat="(key, value) in OPTIONS.meat" value="{{key}}">{{value}}</option>
@@ -66,8 +70,14 @@
 							<label class='btn btn-primary' ng-model="burger.cucumber" btn-checkbox>cucumber</label>
 							<label class='btn btn-primary' ng-model="burger.cabbage" btn-checkbox>cabbage</label>
 						</div>
+
+						<span class='right'>
+							<label>{{price(burger) | currency : "€"}}</label>
+							<label class='remove btn btn-danger' ng-click="burgers.splice($index,1)">Remove</label>
+						</span>
 					</form>
 				</div>
+				<span>Total: {{total() | currency: "€"}}</span>
 			</div>
 		</div>
 		{% endverbatim %}
@@ -81,4 +91,5 @@
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>
 
 <script src="{% static "angular-ui-bootstrap.js" %}"></script>
+<script src="{% static "underscore.js" %}"></script>
 <script src="{% static "app.js" %}"></script>
