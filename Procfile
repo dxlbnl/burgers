@@ -1,0 +1,1 @@
+web: gunicorn burgers.wsgi --log-file -
