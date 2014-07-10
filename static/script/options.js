@@ -9,22 +9,38 @@ var app = angular.module('options', ['ui.bootstrap'])
 		})
 
 
+
+
 		$scope.new_option = function () {
-			$scope.options.push({
-				name: "TEST",
-				values: [
-					{value : "Rare", price: 2.00},
-					{value : "Medium", price: 2.00},
-					{value : "Well done", price: 2.00},
-				]
-			})
+			$scope.options.new = {
+				value : "Rare", price: 2.00,
+			}
+		}
+
+		$scope.set_default = function(value) {
+			debugger;
 		}
 
 		$scope.add_value = function (option) {
-			option.values.push({
-				value: "value",
-				price: 0
-			})
+			if (option.length) {
+				option.push({
+					value: "value",
+					price: 0
+				})
+			} else {
+				this.options[this.name] = [option]
+			}
+		}
+		$scope.remove_value = function (value) {
+			// 	Make the option a boolean when all the values are removed.
+			if (this.option.length == 1) {
+				this.options[this.name] = {
+					price: value.price,
+					'default': value.default
+				}
+			} else {
+				this.option.splice(this.$index, 1);
+			}
 		}
 
 		$scope.save = function () {

@@ -19,35 +19,56 @@ class Ingredient(models.Model):
     def get_options(cls):
         # Build the options object
 
-        options = cls.objects.all()
+        db_options = cls.objects.all()
 
-        result = {}
+        options = {}
 
         # Group by name
-        for option in options:
-            if option.name in result:
-                result[option.name]['values'].append({
-                    'value': option.value,    
-                    'price': float(option.price),    
-                    'default': option.default,    
+        for db_opt in db_options:
+            if db_opt.name in options:
+                options[db_opt.name].append({
+                    'value': db_opt.value,    
+                    'price': float(db_opt.price),    
+                    'default': db_opt.default,    
                 })
-            elif option.value:
-                result[option.name] = {
-                    'name': option.name,
-                    'values': [{
-                        'value': option.value,
-                        'price': float(option.price),
-                        'default': option.default,
-                    }]    
-                }
+            elif db_opt.value:
+                options[db_opt.name] = [{
+                    'value': db_opt.value,
+                    'price': float(db_opt.price),
+                    'default': db_opt.default,
+                }]    
             else:
-                result[option.name] = {
-                    'name': option.name,
-                    'price': float(option.price),
-                    'default': option.default,
+                options[db_opt.name] = {
+                    'name': db_opt.name,
+                    'price': float(db_opt.price),
+                    'default': db_opt.default,
                 }
 
-        return result.values()
+        return options
+
+    @classmethod 
+    def set_options(cls, options):
+        """Flattens options, and stores the options"""
+
+        for name, option in options.iteritems():
+            existing_options = cls.objects.filter(name=name)
+
+            # If it has existing options, create the options again (Should find/update it)
+            if existing_options:
+                existing_options.delete()
+
+
+            if isinstance(option, list):
+                for value in option:
+                    Ingredient(name=name, **value).save()
+            else:
+                Ingredient(name=name, **option).save()
+
+                
+            print option
+            print existing_options
+            print ".. "
+
 
     def __unicode__(self):
         return "Ingredient {}:{}".format(self.name, self.value)

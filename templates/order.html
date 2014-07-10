@@ -10,8 +10,14 @@
 			<div class='control'>
 				<button type="button" ng-click='add_burger()' class="btn btn-success">{{(order.burgers.length) ? "More burgers." : "Add a burger."}}</button>
 			</div>
-			<div class='burger' ng-repeat='burger in order.burgers'>
+			<div class='burger row' ng-repeat='burger in order.burgers'>
 				<form class='form-inline'>
+
+					<div class='input-group' ng-repeat='(name, option) in options'>
+						{{name + option}}
+					</div>
+
+
 					<select ng-model='burger.meat' class='form-control'>
 						<option ng-repeat="(key, value) in OPTIONS.meat" value="{{key}}">{{value}}</option>
 					</select>

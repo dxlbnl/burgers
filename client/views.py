@@ -59,16 +59,8 @@ def option_values(request):
     if request.method == "POST":
         options = json.loads(request.POST['options'])
 
-        for option in options: 
-            # Get the stored values.
-
-            for value in option['values']:
-                Ingredient(name=option['name'], **value).save()
-
-
-        print options
+        Ingredient.set_options(options)
         return redirect("/options")
-
 
     else:
         options = Ingredient.get_options()
