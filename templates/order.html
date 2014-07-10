@@ -13,32 +13,21 @@
 			<div class='burger row' ng-repeat='burger in order.burgers'>
 				<form class='form-inline'>
 
-					<div class='input-group' ng-repeat='(name, option) in options'>
-						{{name + option}}
-					</div>
-
-
-					<select ng-model='burger.meat' class='form-control'>
-						<option ng-repeat="(key, value) in OPTIONS.meat" value="{{key}}">{{value}}</option>
-					</select>
-					<select ng-model='burger.cheese' class='form-control'>
-						<option ng-repeat=	"(key, value) in OPTIONS.cheese" value="{{key}}">{{value}}</option>
-					</select>
-					<div class='btn-group'>
-						<label class='btn btn-primary' ng-model="burger.bacon" btn-checkbox>bacon</label>
-						<label class='btn btn-primary' ng-model="burger.tomatoes" btn-checkbox>tomatoes</label>
-						<label class='btn btn-primary' ng-model="burger.cucumber" btn-checkbox>cucumber</label>
-						<label class='btn btn-primary' ng-model="burger.cabbage" btn-checkbox>cabbage</label>
-					</div>
-
-					<span class='right'>
-
-						<div class='input-group'>
-							<label class='input-group-addon' for='addrName'>Price: </label>
-							<input id='addrName' class='form-control' type='text' disabled value='{{price(burger) | currency : "€"}}'/>
+					<div class='input-group' ng-repeat='(name, option) in options | orderBy:"option"'>
+						<div class='input-group' ng-show='option.length'>
+							<span class='input-group-addon'>{{name}}: </span>
+							<select class='form-control' ng-model='burger[name]' ng-options='value.value as value.value for value in option'></select>
 						</div>
-						<label class='remove btn btn-danger' ng-click="burgers.splice($index,1)">Remove</label>
-					</span>
+						<label class='btn btn-primary' ng-hide='option.length' ng-model="burger[name]" btn-checkbox>{{name}}</label>
+					</div>
+
+					<div class='right'>
+ 						<div class='input-group'>
+ 							<label class='input-group-addon' for='addrName'>Price: </label>
+ 							<input id='addrName' class='form-control' type='text' disabled value='{{price(burger) | currency : "€"}}'/>
+ 						</div>
+ 						<label class='remove btn btn-danger' ng-click="order.burgers.splice($index,1)">Remove</label>
+					</div>
 				</form>
 			</div>
 		</div>

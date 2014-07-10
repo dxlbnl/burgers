@@ -50,24 +50,17 @@ class Ingredient(models.Model):
     def set_options(cls, options):
         """Flattens options, and stores the options"""
 
+        # Just remove everything and write everything, bit ugly ;)
+        cls.objects.all().delete()
+
+
         for name, option in options.iteritems():
-            existing_options = cls.objects.filter(name=name)
-
-            # If it has existing options, create the options again (Should find/update it)
-            if existing_options:
-                existing_options.delete()
-
 
             if isinstance(option, list):
                 for value in option:
                     Ingredient(name=name, **value).save()
             else:
                 Ingredient(name=name, **option).save()
-
-                
-            print option
-            print existing_options
-            print ".. "
 
 
     def __unicode__(self):

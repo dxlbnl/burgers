@@ -12,32 +12,29 @@
     		<li><a href='#' ng-click="save()">Save</a></li>
     	</ul>
 
-    	<div class='row option' ng-repeat='(name, option) in options'>
+    	<div class='row option' ng-repeat='option in options | orderBy:"option.name"'>
             <div class='col-sm-2'>
                 <div class='input-group'>
                     <div class='input-group-addon'>Name:</div>
-                    <input type='text' class='form-control' ng-model='name' />
+                    <input type='text' class='form-control' ng-model='option.name' />
                 </div>
             </div>
 
-
-            <div class='col-sm-8'>
+            <div class='col-sm-9'>
 
                 <!-- Edit option with values -->
-                <div class='row' ng-show='option.length'>
-                    <div class='col-sm-2'>
+                <div class='row' ng-show='option.values'>
+                    <div class='col-sm-4'>
                         <div class='input-group'>
-                            <label class='input-group-addon'>Default:></label>
-                            <select class='form-control' ng-model='option.default'>
-                                <option ng-repeat='value in option'>{{value.value}}</option>
-                            </select>
+                            <span class='input-group-addon'>Default:</span>
+                            <select class='form-control' ng-model='option.default' ng-options="value.value as value.value for value in option.values"></select>
                         </div>
                     </div>
                     <div class='col-sm-2'>
                         <button class='btn btn-default' ng-click="add_value(option)">Add value</button>
                     </div>
-                    <div class='col-sm-8 values' ng-show="option.length">
-                        <div class='row value' ng-repeat='value in option'>
+                    <div class='col-sm-6 values' ng-show="option.values">
+                        <div class='row value' ng-repeat='value in option.values'>
                             <div class='col-sm-5'>
                                 <div class='input-group'>
                                     <div class='input-group-addon'>Value[{{$index}}]:</div>
@@ -55,41 +52,34 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
-
                 <!-- Edit boolean option (without values) -->
-                <div class='row form-inline' ng-hide='option.length'>
-
+                <div class='row form-inline' ng-hide='option.values'>
                     <div class='checkbox'>
                         <label>Default:
                             <input type='checkbox' ng-model='option.default' />
                         </label>
                     </div>
+                    <button class='btn btn-default' ng-click="add_value(option)">Add value</button>
                     <div class='input-group'>
                         <div class='input-group-addon'>€</div>
                         <input type='text' class='form-control' ng-model='value.price' />
                     </div>
-                    <div class='col-sm-2'>
-                        <button class='btn btn-default' ng-click="add_value(option)">Add value</button>
-                    </div>
                 </div>
             </div>
 
-
-
-            <div class='col-sm-2'>
+            <div class='col-sm-1'>
                 <button class='btn' ng-click="remove_value(value)">Remove</button>
             </div>
 
             <!-- Hidden save form -->
             <form class='hidden' method='post' action='option_values'>
                 {% endverbatim %}{% csrf_token %}{% verbatim %}
-                <input type='hidden' name='options' value="{{options}}"/>
+                <input type='hidden' name='options' value="{{prepare_options(options)}}"/>
             </form>
-
-        <pre>{{ options | json}}</pre>
         </div>
+
+        <pre>{{ prepare_options(options) | json}}</pre>
     </div>
 </main>
 
