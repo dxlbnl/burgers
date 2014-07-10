@@ -73,11 +73,14 @@ var app = angular.module('options', ['ui.bootstrap'])
 		$scope.add_value = function (option) {
 			if (option.values && option.values.length) {
 				option.values.push({
-					value: "value",
-					price: 0
+					value: option.name,
+					price: option.price || 0
 				})
 			} else {
-				this.options[this.name] = [option]
+				option.values = [{
+					value: option.name,
+					price: option.price || 0
+				}];
 			}
 		}
 		$scope.remove_value = function (value) {
