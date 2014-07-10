@@ -14,12 +14,6 @@ class OrderAdmin(admin.ModelAdmin):
 admin.site.register(models.Order, OrderAdmin)
 
 
-
-class IngredientTypeAdmin(admin.ModelAdmin):
-    pass
-admin.site.register(models.IngredientType, IngredientTypeAdmin)
-
-
 class IngredientAdmin(admin.ModelAdmin):
     pass
 admin.site.register(models.Ingredient, IngredientAdmin)

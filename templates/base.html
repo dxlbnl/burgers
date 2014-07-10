@@ -1,31 +1,34 @@
+{% load staticfiles %}
 <!doctype html>
 
 <meta charset="utf-8"/>
 
 <link href='http://fonts.googleapis.com/css?family=Dosis:200,400|Lobster+Two:400,700' rel='stylesheet' type='text/css'>
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
-
-<style>
-	body {
-		font-family: "Dosis";
-	}
-
-	.navbar {
-		font-family: "Lobster two"
-	}
-</style>
+<link href="{% static "style/style.css" %}" rel="stylesheet">
 
 <div class='container'>
 	<nav class='navbar navbar-default'>
 		<div class='container-fluid'>
 			<div class='navbar-header'>
-				<a class='navbar-brand' href="/">Burgers</a>
+				<a class='navbar-brand' href="/">Dexter's Burgers</a>
 			</div>
+
+	      	<ul class="nav navbar-nav navbar-right">
+				{% if user.is_authenticated %}
+		        	<li><a href="/orders">Orders</a></li>
+		        	<li><a href="/options">Options</a></li>
+		        	<li><a href="/logout">Logout</a></li>
+				{% else %}
+		        	<li><a href="/login">Login</a></li>
+				{% endif %}
+       		</ul>
+
 		</div>
 	</nav>
 
-	<main ng-app="{{ng_app}}">
-		{% block main %}
+	{% block main %}
+		<main ng-app="order">
 			<div class='container'>
 				<div class='row'>
 					<button type="button" class="btn">Add burgers</button>
@@ -34,12 +37,16 @@
 			</div>
 
 
-		{% endblock %}
 	</main>
+	{% endblock %}
 </div>
 
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>
+
+
+<script src="{% static "script/angular-ui-bootstrap.js" %}"></script>
+<script src="{% static "script/underscore.js" %}"></script>
+<script src="{% static "script/app.js" %}"></script>

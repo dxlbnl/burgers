@@ -15,5 +15,10 @@ urlpatterns = patterns('',
 
     url(r'^$', views.index),
     url(r'^order$', views.order),
+    url(r'^orders$', views.orders),
+    url(r'^options$', views.options),
+    url(r'^logout$', views.logout_view),
+    url(r'^login$', views.login_view),
+
     
 )

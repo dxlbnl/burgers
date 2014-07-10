@@ -1,152 +1,95 @@
-{% load staticfiles %}
-<!doctype html>
+{% extends "base.html" %}
 
-<meta charset="utf-8"/>
+{% block main %}
 
-<link href='http://fonts.googleapis.com/css?family=Dosis:200,400|Lobster+Two:400,700' rel='stylesheet' type='text/css'>
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+<main ng-app="order">
+	{% verbatim %}
+	<div class='container' ng-controller="OrderCtrl">
+		<h3>1. Create some burgers.</h3>
 
-<style>
-	body {
-		font-family: "Dosis";
-	}
-
-	.navbar {
-		font-family: "Lobster two"
-	}
-
-	.burgers {
-		padding: 15px;
-		border-radius: 10px;
-	}
-
-	.burgers .burger {
-		margin: 15px;
-	}
-
-	.burger .btn-primary {
-		background-color: #8AA2B6;
-		border-color: #757C83;
-	}
-
-	.burger .btn-primary:active, .burger .btn-primary.active {
-		background-color: #3071a9;
-		border-color: #285e8e;
-	}
-
-	.burger .right {
-		float: right;
-	}
-
-</style>
-
-<div class='container'>
-	<nav class='navbar navbar-default'>
-		<div class='container-fluid'>
-			<div class='navbar-header'>
-				<a class='navbar-brand' href="/">Burgers</a>
+		<div class='burgers'>
+			<div class='control'>
+				<button type="button" ng-click='add_burger()' class="btn btn-success">{{(order.burgers.length) ? "More burgers." : "Add a burger."}}</button>
 			</div>
-		</div>
-	</nav>
+			<div class='burger' ng-repeat='burger in order.burgers'>
+				<form class='form-inline'>
+					<select ng-model='burger.meat' class='form-control'>
+						<option ng-repeat="(key, value) in OPTIONS.meat" value="{{key}}">{{value}}</option>
+					</select>
+					<select ng-model='burger.cheese' class='form-control'>
+						<option ng-repeat=	"(key, value) in OPTIONS.cheese" value="{{key}}">{{value}}</option>
+					</select>
+					<div class='btn-group'>
+						<label class='btn btn-primary' ng-model="burger.bacon" btn-checkbox>bacon</label>
+						<label class='btn btn-primary' ng-model="burger.tomatoes" btn-checkbox>tomatoes</label>
+						<label class='btn btn-primary' ng-model="burger.cucumber" btn-checkbox>cucumber</label>
+						<label class='btn btn-primary' ng-model="burger.cabbage" btn-checkbox>cabbage</label>
+					</div>
 
-	<main ng-app="order">
-		{% verbatim %}
-		<div class='container' ng-controller="OrderCtrl">
-			<h3>1. Create some burgers.</h3>
+					<span class='right'>
 
-			<div class='burgers'>
-				<div class='control'>
-					<button type="button" ng-click='add_burger()' class="btn btn-success">{{(order.burgers.length) ? "More burgers." : "Add a burger."}}</button>
-				</div>
-				<div class='burger' ng-repeat='burger in order.burgers'>
-					<form class='form-inline'>
-						<select ng-model='burger.meat' class='form-control'>
-							<option ng-repeat="(key, value) in OPTIONS.meat" value="{{key}}">{{value}}</option>
-						</select>
-						<select ng-model='burger.cheese' class='form-control'>
-							<option ng-repeat=	"(key, value) in OPTIONS.cheese" value="{{key}}">{{value}}</option>
-						</select>
-						<div class='btn-group'>
-							<label class='btn btn-primary' ng-model="burger.bacon" btn-checkbox>bacon</label>
-							<label class='btn btn-primary' ng-model="burger.tomatoes" btn-checkbox>tomatoes</label>
-							<label class='btn btn-primary' ng-model="burger.cucumber" btn-checkbox>cucumber</label>
-							<label class='btn btn-primary' ng-model="burger.cabbage" btn-checkbox>cabbage</label>
+						<div class='input-group'>
+							<label class='input-group-addon' for='addrName'>Price: </label>
+							<input id='addrName' class='form-control' type='text' disabled value='{{price(burger) | currency : "€"}}'/>
 						</div>
-
-						<span class='right'>
-
-							<div class='input-group'>
-								<label class='input-group-addon' for='addrName'>Price: </label>
-								<input id='addrName' class='form-control' type='text' disabled value='{{price(burger) | currency : "€"}}'/>
-							</div>
-							<label class='remove btn btn-danger' ng-click="burgers.splice($index,1)">Remove</label>
-						</span>
-					</form>
-				</div>
-			</div>
-
-			<h3>2. Fill in contact details.</h3>
-			<div class='form-horizontal'>
-				<div class='form-group'>
-					<label class='col-sm-2 control-label' for='addrName'>Name:</label>
-					<div class='col-sm-10'>
-						<input ng-model="order.address.name" required id='addrName' class='form-control' type='text' maxlength='20'/>
-					</div>
-				</div>
-				<div class='form-group'>
-					<label class='col-sm-2 control-label' for='addrStreet'>Street:</label>
-					<div class='col-sm-10'>
-						<input ng-model="order.address.street" required id='addrStreet' class='form-control' type='text' maxlength='50'/>
-					</div>
-				</div>
-				<div class='form-group'>
-					<label class='col-sm-2 control-label' for='addrPlace'>Place:</label>
-					<div class='col-sm-10'>
-						<input ng-model="order.address.place" required id='addrPlace' class='form-control' type='text' maxlength='30'/>
-					</div>
-				</div>
-				<div class='form-group'>
-					<label class='col-sm-2 control-label' for='addrPostal'>Postal:</label>
-					<div class='col-sm-10'>
-						<input ng-model="order.address.postal" required id='addrPostal' class='form-control' type='text' maxlength='8'/>
-					</div>
-				</div>
-			</div>
-
-			<h3>3. Accept the order.</h3>
-			<div class='order  col-sm-3'>
-				<div class='input-group'>
-					<label class='input-group-addon' for='addrName'>Price: </label>
-					<input id='addrName' class='form-control' type='text' disabled value='{{total() | currency : "€"}}'/>
-				</div>
-			</div>
-
-			<form class='form-horizontal' role='form' method='post' action="/order">
-
-				{% endverbatim %}
-					{% csrf_token %}
-				{% verbatim %}
-
-				<input type='hidden' name="address" value="{{order.address}}"/>
-				<input type='hidden' name="burgers" value="{{order.burgers}}"/>
-				<div class='col-sm-3'>
-					<button type="submit" class='btn btn-lg btn-success' ng-click="order()">Order!</button>
-				</div>
-			</form>
-			<div class='col-sm-6'>
-				{{ordered | json}}
+						<label class='remove btn btn-danger' ng-click="burgers.splice($index,1)">Remove</label>
+					</span>
+				</form>
 			</div>
 		</div>
-		{% endverbatim %}
-	</main>
-</div>
 
+		<h3>2. Fill in contact details.</h3>
+		<div class='form-horizontal'>
+			<div class='form-group'>
+				<label class='col-sm-2 control-label' for='addrName'>Name:</label>
+				<div class='col-sm-10'>
+					<input ng-model="order.address.name" required id='addrName' class='form-control' type='text' maxlength='20'/>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-sm-2 control-label' for='addrStreet'>Street:</label>
+				<div class='col-sm-10'>
+					<input ng-model="order.address.street" required id='addrStreet' class='form-control' type='text' maxlength='50'/>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-sm-2 control-label' for='addrPlace'>Place:</label>
+				<div class='col-sm-10'>
+					<input ng-model="order.address.place" required id='addrPlace' class='form-control' type='text' maxlength='30'/>
+				</div>
+			</div>
+			<div class='form-group'>
+				<label class='col-sm-2 control-label' for='addrPostal'>Postal:</label>
+				<div class='col-sm-10'>
+					<input ng-model="order.address.postal" required id='addrPostal' class='form-control' type='text' maxlength='8'/>
+				</div>
+			</div>
+		</div>
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<h3>3. Accept the order.</h3>
+		<div class='order  col-sm-3'>
+			<div class='input-group'>
+				<label class='input-group-addon' for='addrName'>Price: </label>
+				<input id='addrName' class='form-control' type='text' disabled value='{{total() | currency : "€"}}'/>
+			</div>
+		</div>
 
-<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>
+		<form class='form-horizontal' role='form' method='post' action="/order">
 
-<script src="{% static "angular-ui-bootstrap.js" %}"></script>
-<script src="{% static "underscore.js" %}"></script>
-<script src="{% static "app.js" %}"></script>
+			{% endverbatim %}
+				{% csrf_token %}
+			{% verbatim %}
+
+			<input type='hidden' name="address" value="{{order.address}}"/>
+			<input type='hidden' name="burgers" value="{{order.burgers}}"/>
+			<div class='col-sm-3'>
+				<button type="submit" class='btn btn-lg btn-success' ng-click="order()">Order!</button>
+			</div>
+		</form>
+		<div class='col-sm-6'>
+			{{ordered | json}}
+		</div>
+	</div>
+	{% endverbatim %}
+</main>
+{% endblock %}

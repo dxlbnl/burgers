@@ -1,0 +1,31 @@
+
+    body {
+        font-family: "Dosis";
+    }
+
+    .navbar {
+        font-family: "Lobster two"
+    }
+
+    .burgers {
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+    .burgers .burger {
+        margin: 15px;
+    }
+
+    .burger .btn-primary {
+        background-color: #8AA2B6;
+        border-color: #757C83;
+    }
+
+    .burger .btn-primary:active, .burger .btn-primary.active {
+        background-color: #3071a9;
+        border-color: #285e8e;
+    }
+
+    .burger .right {
+        float: right;
+    }
