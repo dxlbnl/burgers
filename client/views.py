@@ -52,14 +52,28 @@ def orders(request):
 def options(request):
     """Returns the burger options, ingredients, pricing enz."""
 
-    ingredients = Ingredient.objects.all()
+    return render(request, "options.html")
+
+def option_values(request):
+
+    if request.method == "POST":
+        options = json.loads(request.POST['options'])
+
+        for option in options: 
+            # Get the stored values.
+
+            for value in option['values']:
+                Ingredient(name=option['name'], **value).save()
 
 
-    context = {
-        'ingredients': ingredients
-    }
+        print options
+        return redirect("/options")
 
-    return render(request, "options.html", context)
+
+    else:
+        options = Ingredient.get_options()
+
+    return HttpResponse(json.dumps(options),mimetype='application/json')
 
 
 def logout_view(request):

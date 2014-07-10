@@ -17,6 +17,7 @@ urlpatterns = patterns('',
     url(r'^order$', views.order),
     url(r'^orders$', views.orders),
     url(r'^options$', views.options),
+    url(r'^option_values$', views.option_values),
     url(r'^logout$', views.logout_view),
     url(r'^login$', views.login_view),
 

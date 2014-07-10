@@ -6,14 +6,51 @@ class Ingredient(models.Model):
 
     """An Ingredient has a name and value, to store all the possible different options of a burger. """
 
-    name = models.CharField(max_length=20)
-    value = models.CharField(max_length=20)
+    name = models.CharField(max_length=20, blank=False)
+    value = models.CharField(max_length=20, blank=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
-    default = models.BooleanField(max_length=20)
+    default = models.NullBooleanField()
 
     unique_together = (('name', 'value'))
 
+
+    @classmethod
+    def get_options(cls):
+        # Build the options object
+
+        options = cls.objects.all()
+
+        result = {}
+
+        # Group by name
+        for option in options:
+            if option.name in result:
+                result[option.name]['values'].append({
+                    'value': option.value,    
+                    'price': float(option.price),    
+                    'default': option.default,    
+                })
+            elif option.value:
+                result[option.name] = {
+                    'name': option.name,
+                    'values': [{
+                        'value': option.value,
+                        'price': float(option.price),
+                        'default': option.default,
+                    }]    
+                }
+            else:
+                result[option.name] = {
+                    'name': option.name,
+                    'price': float(option.price),
+                    'default': option.default,
+                }
+
+        return result.values()
+
+    def __unicode__(self):
+        return "Ingredient {}:{}".format(self.name, self.value)
 
 
 class Order(models.Model):

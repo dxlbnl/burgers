@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% block main %}
-
 <main ng-app="order">
 	{% verbatim %}
 	<div class='container' ng-controller="OrderCtrl">
@@ -92,4 +91,11 @@
 	</div>
 	{% endverbatim %}
 </main>
+{% endblock %}
+
+
+{% block scripts %}
+	{% load staticfiles %}
+	{{ block.super }}
+	<script src="{% static "script/order.js" %}"></script>
 {% endblock %}

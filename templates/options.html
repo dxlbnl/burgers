@@ -1,10 +1,77 @@
 {% extends "base.html" %}
 
 {% block main %}
-
-<main>
+{% verbatim %}
+<main ng-app='options'>
     <h1>The Burger's ingredients and varieties</h1>
+
+
+    <div class='container' ng-controller='optionCtrl'>
+    	<ul class='nav nav-pills'>
+            <li><a href='#' ng-click="new_option()">New option</a></li>
+    		<li><a href='#' ng-click="save()">Save</a></li>
+    	</ul>
+
+    	<div class='row option' ng-repeat='option in options'>
+            <div class='col-sm-2'>
+                <div class='input-group'>
+                    <div class='input-group-addon'>Name:</div>
+                    <input type='text' class='form-control' ng-model='option.name' />
+                </div>
+            </div>
+            
+            <div class='col-sm-2' ng-show='option.values.length'>
+                <div class='input-group'>
+                    <label class='input-group-addon'>Default:></label>
+                    <select class='form-control' ng-model='option.default'>
+                        <option ng-repeat='value in option.values'>{{value}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class='col-sm-2' ng-hide='option.values.length'>
+                <div class='checkbox'>
+                    <label>Default:
+                        <input type='checkbox' ng-model='option.default' />
+                    </label>
+                </div>
+            </div>
+            <div class='col-sm-6 values'>
+                <button class='btn' ng-click="add_value(option)">Add value</button>
+                <div class='row value' ng-repeat='value in option.values'>
+                    <div class='col-sm-5'>
+                        <div class='input-group'>
+                            <div class='input-group-addon'>Value[{{$index}}]:</div>
+                            <input type='text' class='form-control' ng-model='value.value' />
+                        </div>
+                    </div>
+                    <div class='col-sm-5'>
+                        <div class='input-group'>
+                            <div class='input-group-addon'>€</div>
+                            <input type='text' class='form-control' ng-model='value.price' />
+                        </div>
+                    </div>
+                    <div class='col-sm-2'>
+                        <button class='btn' ng-click="option.values.splice($index, 1)">Remove</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hidden save form -->
+            <form class='hidden' method='post' action='option_values'>
+                {% endverbatim %}{% csrf_token %}{% verbatim %}
+                <input type='hidden' name='options' value="{{options}}"/>
+            </form>
+
+    	</div>
+    </div>
 </main>
 
+{% endverbatim %}
+{% endblock %}
+
+{% block scripts %}
+	{% load staticfiles %}
+	{{ block.super }}
+	<script src="{% static "script/options.js" %}"></script>
 
 {% endblock %}

@@ -29,3 +29,27 @@
     .burger .right {
         float: right;
     }
+
+
+
+
+
+
+
+
+/*Options*/
+
+main .values {
+    background-color: #e7e7e7;
+    padding: 15px;
+    padding-right: 45px;
+    border-radius: 5px;
+}
+
+main .option {
+    border: thin solid #e7e7e7;
+    padding: 5px;
+    margin-bottom: 5px;
+
+    border-radius: 5px;
+}
