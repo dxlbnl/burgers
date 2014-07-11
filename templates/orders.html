@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block main %}
+{% verbatim %}
+<main ng-app='orders'>
+    <div class='container' ng-controller='orderListCtrl'>
+    </div>
+</main>
+{% endverbatim %}
+{% endblock %}
+
+{% block scripts %}
+	{% load staticfiles %}
+	{{ block.super }}
+	<script src="{% static "script/orders.js" %}"></script>
+
+{% endblock %}

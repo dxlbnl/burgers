@@ -9,12 +9,13 @@ Built in Django
 Todo
 ====
  - Write Tests
- - Add a pricing scheme
+ - ~~Add a pricing scheme~~
  - ~~Add sauce control ~~
- - Add ingredient control
- - Some Customer views, adding orders, viewing status
+ - ~~Add ingredient control~~
+ - ~~Some Customer views, adding orders~~ , viewing status
  - Some manager views, changing orders. 
  - Location validation, (dynamic distance check? ;)
+ - Authorization
 
 Install environment
 ===================

@@ -11,24 +11,23 @@
 				<button type="button" ng-click='add_burger()' class="btn btn-success">{{(order.burgers.length) ? "More burgers." : "Add a burger."}}</button>
 			</div>
 			<div class='burger row' ng-repeat='burger in order.burgers'>
-				<form class='form-inline'>
-
-					<div class='input-group' ng-repeat='(name, option) in options | orderBy:"option"'>
-						<div class='input-group' ng-show='option.length'>
-							<span class='input-group-addon'>{{name}}: </span>
-							<select class='form-control' ng-model='burger[name]' ng-options='value.value as value.value for value in option'></select>
+				<div class='col-xs-8 form-inline'>
+					<div class='input-group' ng-repeat='ingredient in ingredients|orderBy:"values.length"'>
+						<div class='input-group' ng-show='ingredient.values'>
+							<span class='input-group-addon'>{{ingredient.name}}: </span>
+							<select class='form-control' ng-model='burger[ingredient.name]' ng-options='value.value as value.value for value in ingredient.values'></select>
 						</div>
-						<label class='btn btn-primary' ng-hide='option.length' ng-model="burger[name]" btn-checkbox>{{name}}</label>
+						<label class='btn btn-primary' ng-hide='ingredient.values' ng-model="burger[ingredient.name]" btn-checkbox>{{ingredient.name}}</label>
 					</div>
+				</div>
 
-					<div class='right'>
+					<div class='col-xs-4 form-inline'>
  						<div class='input-group'>
  							<label class='input-group-addon' for='addrName'>Price: </label>
  							<input id='addrName' class='form-control' type='text' disabled value='{{price(burger) | currency : "€"}}'/>
  						</div>
  						<label class='remove btn btn-danger' ng-click="order.burgers.splice($index,1)">Remove</label>
 					</div>
-				</form>
 			</div>
 		</div>
 
@@ -63,7 +62,7 @@
 		<h3>3. Accept the order.</h3>
 		<div class='order  col-sm-3'>
 			<div class='input-group'>
-				<label class='input-group-addon' for='addrName'>Price: </label>
+				<label class='input-group-addon' for='addrName'>Total: </label>
 				<input id='addrName' class='form-control' type='text' disabled value='{{total() | currency : "€"}}'/>
 			</div>
 		</div>
@@ -81,7 +80,7 @@
 			</div>
 		</form>
 		<div class='col-sm-6'>
-			{{ordered | json}}
+			<pre>{{order | json}}</pre>
 		</div>
 	</div>
 	{% endverbatim %}

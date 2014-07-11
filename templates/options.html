@@ -12,7 +12,7 @@
     		<li><a href='#' ng-click="save()">Save</a></li>
     	</ul>
 
-    	<div class='row option' ng-repeat='option in options | orderBy:"option.name"'>
+    	<div class='row option' ng-repeat="option in options|orderBy:'option.name'">
             <div class='col-sm-2'>
                 <div class='input-group'>
                     <div class='input-group-addon'>Name:</div>
@@ -63,7 +63,7 @@
                     <button class='btn btn-default' ng-click="add_value(option)">Add value</button>
                     <div class='input-group'>
                         <div class='input-group-addon'>€</div>
-                        <input type='text' class='form-control' ng-model='value.price' />
+                        <input type='text' class='form-control' ng-model='option.price' />
                     </div>
                 </div>
             </div>
@@ -75,11 +75,10 @@
             <!-- Hidden save form -->
             <form class='hidden' method='post' action='option_values'>
                 {% endverbatim %}{% csrf_token %}{% verbatim %}
-                <input type='hidden' name='options' value="{{prepare_options(options)}}"/>
+                <input type='hidden' name='options' value="{{options}}"/>
             </form>
         </div>
 
-        <pre>{{ prepare_options(options) | json}}</pre>
     </div>
 </main>
 

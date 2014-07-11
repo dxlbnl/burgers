@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.shortcuts import redirect
+from django.core import serializers
 
-from django.contrib.auth import authenticate, login, logout
-from client.models import Burger, Order, Ingredient
+from django.contrib.auth import authenticate, login, logout, decorators
+from client.models import Burger, Order, Ingredient, BurgerContents
 
 import json
 # Create your views here.
@@ -28,7 +29,20 @@ def order(request, order_id=None):
 
         for burger in burgers:
             # Just let it run, and catch failures.
-            burger_model = Burger(order=order, **burger)
+            burger_model = Burger(order=order)
+            burger_model.save()
+
+            for ingredient, value in burger.iteritems():
+                # Add all ingredients to the burger.
+                ing_model = Ingredient.objects.filter(name=ingredient)
+                if (ing_model.count() > 1):
+                    ing_model = ing_model.get(value=value)
+                elif ing_model.count() == 1:
+                    ing_model = ing_model[0]
+                else:
+                    raise ValueError("Invalid option '{}'".format(ingredient))
+
+                BurgerContents(burger=burger_model, ingredient=ing_model).save()
 
             burger_model.save()
 
@@ -44,16 +58,53 @@ def order(request, order_id=None):
     else:
         return redirect('index')
 
-
+@decorators.login_required
 def orders(request):
 
-    return index(request)
+    if request.method == "POST":
+        pass
+    elif "application/json" in request.META["HTTP_ACCEPT"]:
 
+        # Get the parameters
+        limit = ('limit' in request.GET) and request.GET['limit'] or 20
+        start = ('start' in request.GET) and request.GET['start'] or 0
+
+        # Build the orders response
+        # Should check if django uses joins like this.
+        orders = [{
+            'id': order.id,
+            'status': order.status,
+            'name': order.name,
+            'street': order.street,
+            'place': order.place,
+            'postal': order.postal,
+            'time_ordered': repr(order.time_ordered),
+
+            "burgers": [{
+                    ingredient.name: {
+                        'value' : ingredient.value,
+                        'price' : float(ingredient.price)
+                    } for ingredient in burger.ingredients.all()
+                } for burger in order.burgers.all()
+            ]
+        } for order in Order.objects.all()[start:start+limit] ]
+
+
+
+
+
+
+        return HttpResponse(json.dumps(orders),mimetype='application/json')
+
+    return render(request, "orders.html")
+
+@decorators.login_required
 def options(request):
     """Returns the burger options, ingredients, pricing enz."""
 
     return render(request, "options.html")
 
+@decorators.login_required
 def option_values(request):
 
     if request.method == "POST":
@@ -67,7 +118,7 @@ def option_values(request):
 
     return HttpResponse(json.dumps(options),mimetype='application/json')
 
-
+@decorators.login_required
 def logout_view(request):
 
     logout(request)

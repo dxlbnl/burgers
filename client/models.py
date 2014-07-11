@@ -1,6 +1,6 @@
 from django.db import models
 
-
+from itertools import groupby
 
 class Ingredient(models.Model):
 
@@ -17,32 +17,69 @@ class Ingredient(models.Model):
 
     @classmethod
     def get_options(cls):
+        """
+            Creates an object which represents all the options in the database.
+            returns [
+                {
+                    name: str,
+                    default: bool,
+                    price: float,
+                }, 
+                or 
+                {
+                    name: str,
+                    values: [*{
+                        value: str,
+                        price: float,
+                        default: bool
+                    }]
+                }
+            ]
+        """
         # Build the options object
 
         db_options = cls.objects.all()
+        options = []
+        for key, group in groupby(cls.objects.all(), lambda opt: opt.name):
 
-        options = {}
+            group = list(group)
 
-        # Group by name
-        for db_opt in db_options:
-            if db_opt.name in options:
-                options[db_opt.name].append({
-                    'value': db_opt.value,    
-                    'price': float(db_opt.price),    
-                    'default': db_opt.default,    
+            if len(group) > 1:
+                options.append({
+                    "name": key,
+                    "values" : [{
+                        'value': opt.value,
+                        'price': float(opt.price),
+                        'default': opt.default
+                    } for opt in group]
                 })
-            elif db_opt.value:
-                options[db_opt.name] = [{
-                    'value': db_opt.value,
-                    'price': float(db_opt.price),
-                    'default': db_opt.default,
-                }]    
             else:
-                options[db_opt.name] = {
-                    'name': db_opt.name,
-                    'price': float(db_opt.price),
-                    'default': db_opt.default,
-                }
+                options.append({
+                    "name": key,
+                    'price': float(group[0].price),
+                    'default': group[0].default
+                })
+
+        # # Group by name
+        # for db_opt in db_options:
+        #     if db_opt.name in options:
+        #         options[db_opt.name].append({
+        #             'value': db_opt.value,    
+        #             'price': float(db_opt.price),    
+        #             'default': db_opt.default,    
+        #         })
+        #     elif db_opt.value:
+        #         options[db_opt.name] = [{
+        #             'value': db_opt.value,
+        #             'price': float(db_opt.price),
+        #             'default': db_opt.default,
+        #         }]    
+        #     else:
+        #         options[db_opt.name] = {
+        #             'name': db_opt.name,
+        #             'price': float(db_opt.price),
+        #             'default': db_opt.default,
+        #         }
 
         return options
 
@@ -54,13 +91,13 @@ class Ingredient(models.Model):
         cls.objects.all().delete()
 
 
-        for name, option in options.iteritems():
+        for option in options:
 
-            if isinstance(option, list):
-                for value in option:
-                    Ingredient(name=name, **value).save()
+            if 'values' in option:
+                for value in option['values']:
+                    Ingredient(name=option['name'], **value).save()
             else:
-                Ingredient(name=name, **option).save()
+                Ingredient(**option).save()
 
 
     def __unicode__(self):
@@ -75,6 +112,8 @@ class Order(models.Model):
     street = models.CharField(max_length=50)
     place = models.CharField(max_length=30)
     postal = models.CharField(max_length=8)
+
+    time_ordered = models.TimeField(auto_now_add=True)
 
     # Status info
     ORDERED = "O"
@@ -100,32 +139,8 @@ class Burger(models.Model):
     ingredients = models.ManyToManyField(Ingredient, through='BurgerContents')
 
     # Order 
-    order = models.ForeignKey('Order')
+    order = models.ForeignKey('Order', related_name='burgers')
 
-    # # Ingredients
-    # NO_CHEESE = "NC"
-    # CHEESE = "C"
-    # DOUBLE_CHEESE = "DC"
-
-    # RARE = "R"
-    # MEDIUM = "M"
-    # WELL_DONE = "W"
-
-    # cheese = models.CharField(max_length=2, choices=(
-    #   (NO_CHEESE, "No cheese"),
-    #   (CHEESE, "cheese"),
-    #   (DOUBLE_CHEESE, "Double cheese")
-    # ), default=CHEESE)
-    # meat = models.CharField(max_length=1, choices=(
-    #   (RARE, "Rare"),
-    #   (MEDIUM, "Medium"),
-    #   (WELL_DONE, "Well done")
-    # ), default=MEDIUM)
-
-    # bacon = models.BooleanField(default=False)
-    # tomatoes = models.BooleanField(default=False)
-    # cucumber = models.BooleanField(default=False)
-    # cabbage = models.BooleanField(default=False)
 
 class BurgerContents(models.Model):
     

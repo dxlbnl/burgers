@@ -7,23 +7,19 @@ var app = angular.module('options', ['ui.bootstrap'])
 		$http.get("option_values").success(function (data) {
 
 			// Prepare the options for use in angularjs
-			$scope.options = _.map(data, function (option, name) {
-				var _default;
-				if (option.length) {
-					// find the default
-					for (i=0; i<option.length; i++) {
-						if (option[i].default === true) {
-							_default = option[i].value;
+			$scope.options = data;
+
+			// Fix the defaults
+			_.each($scope.options, function (option) {
+				var i;
+				if (option.values) {
+					for (i=0; i<option.values.length; i++) {
+						if (option.values[i].default) {
+							option.default = option.values[i].value;
 						}
 					}
-					return {
-						values: option,
-						name: name,
-						default: _default
-					}
 				}
-				return _.extend(option, {name: name})
-			});
+			})
 		})
 
 		// $scope.track
@@ -66,7 +62,7 @@ var app = angular.module('options', ['ui.bootstrap'])
 			return opts
 		}
 
-		$scope.set_default = function(value) {
+		$scope.default = function(value) {
 			debugger;
 		}
 

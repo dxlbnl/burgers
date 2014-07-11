@@ -6,7 +6,7 @@ var app = angular.module('order', ['ui.bootstrap'])
 	.controller('OrderCtrl', function ($scope, $http) {
 
 		$http.get("option_values").success(function (data) {
-			$scope.options = data;
+			$scope.ingredients = data;
 		})
 
 		$scope.order = {
@@ -17,14 +17,15 @@ var app = angular.module('order', ['ui.bootstrap'])
 		$scope.add_burger = function () {
 			// create a new object out of the defaults.
 			$scope.order.burgers.push(
-				_.object(_.keys($scope.options), 
-					_.map($scope.options, function get_default(opt) {
+				_.object(_.pluck($scope.ingredients, 'name'), 
+					_.map($scope.ingredients, function get_default(opt) {
+						var i;
 						// return the default
 						if (opt.default) {
 							return opt.default;
-						} else if (opt.length) {
-							for (i=0; i<opt.length; i++) {
-								if (opt[i].default) return opt[i].value;
+						} else if (opt.values) {
+							for (i=0; i<opt.values.length; i++) {
+								if (opt.values[i].default) return opt.values[i].value;
 							}
 						}
 					})
@@ -34,20 +35,20 @@ var app = angular.module('order', ['ui.bootstrap'])
 
 		$scope.price = function (burger) {
 			// Map burger on scheme, and add the prices
-			var price = 0;
+			var i, ingredient, price = 0;
 
-			return _.reduce(burger, function (result, value, ingredient) {
-				var option;
-				if (value) {
-					option = $scope.options[ingredient];
-					if (_.isArray(option)) {
-						return result + _.findWhere(option, {value: value}).price;
-					} else if (option && option.price) {
-						return result + option.price;
+			for (i=0; i<$scope.ingredients.length; i++) {
+				ingredient = $scope.ingredients[i];
+				if (burger.hasOwnProperty(ingredient.name)) {
+					if (ingredient.values) {
+						price += _.findWhere(ingredient.values, {value: burger[ingredient.name]}).price;
+					} else if (burger[ingredient.name] === true) {
+						price += ingredient.price;
 					}
 				}
-				return result;
-			}, 0)
+			}
+			return price;
+
 		}
 		$scope.total = function () {
 			var burgers = _.map($scope.order.burgers, $scope.price);
@@ -69,10 +70,10 @@ var app = angular.module('order', ['ui.bootstrap'])
 
 // <!-- 
 // 					<select ng-model='burger.meat' class='form-control'>
-// 						<option ng-repeat="(key, value) in OPTIONS.meat" value="{{key}}">{{value}}</option>
+// 						<option ng-repeat="(key, value) in ingredients.meat" value="{{key}}">{{value}}</option>
 // 					</select>
 // 					<select ng-model='burger.cheese' class='form-control'>
-// 						<option ng-repeat=	"(key, value) in OPTIONS.cheese" value="{{key}}">{{value}}</option>
+// 						<option ng-repeat=	"(key, value) in ingredients.cheese" value="{{key}}">{{value}}</option>
 // 					</select>
 // 					<div class='btn-group'>
 // 						<label class='btn btn-primary' ng-model="burger.bacon" btn-checkbox>bacon</label>
