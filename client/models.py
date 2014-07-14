@@ -120,14 +120,20 @@ class Order(models.Model):
     IN_PROGRESS = "P"
     ON_THE_ROAD = "R"
     DELIVERED = "D"
-
-    status = models.CharField(max_length=1, choices=(
+    
+    STATUS_OPTS = (
         (ORDERED, "Ordered"),
         (IN_PROGRESS, "In progress"),
         (ON_THE_ROAD, "On the road"),
         (DELIVERED, "Delivered")
-    ), default=ORDERED)
+    )
 
+
+
+    status = models.CharField(max_length=1, choices=STATUS_OPTS, default=ORDERED)
+
+    def __str__(self):
+        return "Order for {}".format(self.name)
 
     def get_absolute_url(self):
         return "/order/{}/".format(self.id)
@@ -141,6 +147,8 @@ class Burger(models.Model):
     # Order 
     order = models.ForeignKey('Order', related_name='burgers')
 
+    def __str__(self):
+        return "Burger in {}".format(self.order)
 
 class BurgerContents(models.Model):
     

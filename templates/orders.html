@@ -2,8 +2,56 @@
 
 {% block main %}
 {% verbatim %}
+
+<style>
+.commas-inline {
+    display: inline;
+}
+.commas-inline li {
+    list-style: none;
+    display: inline;
+    margin: 2px;
+}
+.commas-inline li:not(:last-child):after {
+    content: ",";
+}
+
+
+</style>
 <main ng-app='orders'>
     <div class='container' ng-controller='orderListCtrl'>
+        <table class='table table-striped'>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Burgers</th>
+                <th>Price</th>
+                <th>Status</th>
+            </tr>
+            <tr ng-repeat="order in orders">
+                <td>{{order.id}}</td>
+                <td>{{order.name}}</td>
+                <td>{{order.street}}, {{order.postal}}, {{order.place}}</td>
+                <td>
+                    <table class='table'>
+                        <tr class='burger' ng-repeat="burger in order.burgers">
+                            <td>
+                                <ul class='commas-inline'>
+                                    <li ng-repeat="(name, ingredient) in filter_price(burger)">{{name + (_.isString(ingredient.value) ? ":" + ingredient.value : "")}}</li>
+                                </ul>
+                            </td>
+                            <td>
+                                {{price(burger) | currency:"€"}}
+                            </td>  
+                        </tr>
+                    </table>
+                </td>
+                <td>{{price(order.burgers, order) | currency:"€"}}</td>
+                <td><select ng-options="">{{order.status}}</td>
+            </tr>
+        </table>
+        <pre>{{orders|json}}</pre>
     </div>
 </main>
 {% endverbatim %}
@@ -13,5 +61,4 @@
 	{% load staticfiles %}
 	{{ block.super }}
 	<script src="{% static "script/orders.js" %}"></script>
-
 {% endblock %}

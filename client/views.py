@@ -1,9 +1,8 @@
-from django.shortcuts import render
 from django.http import HttpResponse
-from django.shortcuts import redirect
 from django.core import serializers
-
+from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout, decorators
+
 from client.models import Burger, Order, Ingredient, BurgerContents
 
 import json
@@ -22,6 +21,9 @@ def order(request, order_id=None):
         burgers = json.loads(request.POST['burgers'])
         address = json.loads(request.POST['address'])
 
+        import pprint
+        pprint.pprint(burgers)
+
         # Just let it run, and catch failures. (Validation ?)
         order = Order(**address)
         order.save()
@@ -34,15 +36,16 @@ def order(request, order_id=None):
 
             for ingredient, value in burger.iteritems():
                 # Add all ingredients to the burger.
-                ing_model = Ingredient.objects.filter(name=ingredient)
-                if (ing_model.count() > 1):
-                    ing_model = ing_model.get(value=value)
-                elif ing_model.count() == 1:
-                    ing_model = ing_model[0]
-                else:
-                    raise ValueError("Invalid option '{}'".format(ingredient))
-
-                BurgerContents(burger=burger_model, ingredient=ing_model).save()
+                print ingredient, value
+                if value:
+                    ing_model = Ingredient.objects.filter(name=ingredient)
+                    if (ing_model.count() > 1):
+                        ing_model = ing_model.get(value=value)
+                    elif ing_model.count() == 1:
+                        ing_model = ing_model[0]
+                    else:
+                        raise ValueError("Invalid option '{}'".format(ingredient))
+                    BurgerContents(burger=burger_model, ingredient=ing_model).save()
 
             burger_model.save()
 
@@ -73,7 +76,7 @@ def orders(request):
         # Should check if django uses joins like this.
         orders = [{
             'id': order.id,
-            'status': order.status,
+            'status': order.get_status_display(),
             'name': order.name,
             'street': order.street,
             'place': order.place,
@@ -89,11 +92,6 @@ def orders(request):
             ]
         } for order in Order.objects.all()[start:start+limit] ]
 
-
-
-
-
-
         return HttpResponse(json.dumps(orders),mimetype='application/json')
 
     return render(request, "orders.html")
@@ -102,10 +100,6 @@ def orders(request):
 def options(request):
     """Returns the burger options, ingredients, pricing enz."""
 
-    return render(request, "options.html")
-
-@decorators.login_required
-def option_values(request):
 
     if request.method == "POST":
         options = json.loads(request.POST['options'])
@@ -113,10 +107,19 @@ def option_values(request):
         Ingredient.set_options(options)
         return redirect("/options")
 
-    else:
-        options = Ingredient.get_options()
+
+    # Respond to a normal call
+    return render(request, "options.html")
+
+
+@decorators.login_required
+def option_values(request):
+
+    # Respond to a ajax call
+    options = Ingredient.get_options()
 
     return HttpResponse(json.dumps(options),mimetype='application/json')
+
 
 @decorators.login_required
 def logout_view(request):
@@ -131,12 +134,12 @@ def login_view(request):
 
         username = request.POST['username']
         password = request.POST['password']
-        print "Checking credentials", username
+
         user = authenticate(username=username, password=password)
-        print "Found", user
+
         if user is not None:
             if user.is_active:
-                print "Logging in"
+
                 login(request, user)
                 # Redirect to a success page.
             else:
@@ -145,6 +148,9 @@ def login_view(request):
         else:
             pass
             # Return an 'invalid login' error message.
+
+        if 'next' in request.GET:
+            return redirect(request.GET['next'])
         return index(request)
     else:
         return render(request, "login.html")

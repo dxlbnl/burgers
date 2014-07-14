@@ -73,7 +73,7 @@
             </div>
 
             <!-- Hidden save form -->
-            <form class='hidden' method='post' action='option_values'>
+            <form class='hidden' method='post' action='options'>
                 {% endverbatim %}{% csrf_token %}{% verbatim %}
                 <input type='hidden' name='options' value="{{options}}"/>
             </form>

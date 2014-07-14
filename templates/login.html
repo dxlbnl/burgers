@@ -3,7 +3,7 @@
 {% block main %}
 <main class='container'>
 
-      <form class="form-signin" role="form" method='POST' action='login'>
+      <form class="form-signin" role="form" method='POST'>
         {% csrf_token %}
         <h2 class="form-signin-heading">Please sign in</h2>
         <input type="text" name="username" class="form-control" placeholder="Username" required autofocus>
