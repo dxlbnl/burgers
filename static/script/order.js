@@ -5,7 +5,7 @@ var app = angular.module('order', ['ui.bootstrap'])
 	})
 	.controller('OrderCtrl', function ($scope, $http) {
 
-		$http.get("option_values").success(function (data) {
+		$http.get("ingredients_list").success(function (data) {
 			$scope.ingredients = data;
 		})
 

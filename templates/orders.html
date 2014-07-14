@@ -20,17 +20,27 @@
 </style>
 <main ng-app='orders'>
     <div class='container' ng-controller='orderListCtrl'>
+        <div class='filter btn-group'>
+            <label class="btn btn-primary" 
+                ng-repeat='status in orderStatus' 
+                ng-checked
+                ng-model='orderFilter.status[status]'
+                btn-checkbox
+            >{{status}}</label>
+        </div>
         <table class='table table-striped'>
             <tr>
                 <th>#</th>
+                <th>Time</th>
                 <th>Name</th>
                 <th>Address</th>
                 <th>Burgers</th>
                 <th>Price</th>
                 <th>Status</th>
             </tr>
-            <tr ng-repeat="order in orders">
+            <tr ng-repeat="order in orders|filterOrders:orderFilter">
                 <td>{{order.id}}</td>
+                <td>{{order.time_ordered}}</td>
                 <td>{{order.name}}</td>
                 <td>{{order.street}}, {{order.postal}}, {{order.place}}</td>
                 <td>
@@ -38,7 +48,7 @@
                         <tr class='burger' ng-repeat="burger in order.burgers">
                             <td>
                                 <ul class='commas-inline'>
-                                    <li ng-repeat="(name, ingredient) in filter_price(burger)">{{name + (_.isString(ingredient.value) ? ":" + ingredient.value : "")}}</li>
+                                    <li ng-repeat="(name, ingredient) in filter_price(burger)">{{name + (ingredient.value ? ":" + ingredient.value : "")}}</li>
                                 </ul>
                             </td>
                             <td>
@@ -48,10 +58,9 @@
                     </table>
                 </td>
                 <td>{{price(order.burgers, order) | currency:"€"}}</td>
-                <td><select ng-options="">{{order.status}}</td>
+                <td><select ng-options="status for status in orderStatus" ng-model='order.status' ng-change="update(order, status)"></select></td>
             </tr>
         </table>
-        <pre>{{orders|json}}</pre>
     </div>
 </main>
 {% endverbatim %}

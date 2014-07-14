@@ -2,39 +2,39 @@
 
 {% block main %}
 {% verbatim %}
-<main ng-app='options'>
+<main ng-app='ingredients'>
     <h1>The Burger's ingredients and varieties</h1>
 
 
-    <div class='container' ng-controller='optionCtrl'>
+    <div class='container' ng-controller='ingredientCtrl'>
     	<ul class='nav nav-pills'>
-            <li><a href='#' ng-click="new_option()">New option</a></li>
+            <li><a href='#' ng-click="new_ingredient()">New ingredient</a></li>
     		<li><a href='#' ng-click="save()">Save</a></li>
     	</ul>
 
-    	<div class='row option' ng-repeat="option in options|orderBy:'option.name'">
+    	<div class='row ingredient' ng-repeat="ingredient in ingredients|orderBy:'ingredient.values.length'">
             <div class='col-sm-2'>
                 <div class='input-group'>
                     <div class='input-group-addon'>Name:</div>
-                    <input type='text' class='form-control' ng-model='option.name' />
+                    <input type='text' class='form-control' ng-model='ingredient.name' />
                 </div>
             </div>
 
             <div class='col-sm-9'>
 
-                <!-- Edit option with values -->
-                <div class='row' ng-show='option.values'>
+                <!-- Edit ingredient with values -->
+                <div class='row' ng-show='ingredient.values'>
                     <div class='col-sm-4'>
                         <div class='input-group'>
                             <span class='input-group-addon'>Default:</span>
-                            <select class='form-control' ng-model='option.default' ng-options="value.value as value.value for value in option.values"></select>
+                            <select class='form-control' ng-model='ingredient.default' ng-options="value.value as value.value for value in ingredient.values"></select>
                         </div>
                     </div>
                     <div class='col-sm-2'>
-                        <button class='btn btn-default' ng-click="add_value(option)">Add value</button>
+                        <button class='btn btn-default' ng-click="add_value(ingredient)">Add value</button>
                     </div>
-                    <div class='col-sm-6 values' ng-show="option.values">
-                        <div class='row value' ng-repeat='value in option.values'>
+                    <div class='col-sm-6 values' ng-show="ingredient.values">
+                        <div class='row value' ng-repeat='value in ingredient.values'>
                             <div class='col-sm-5'>
                                 <div class='input-group'>
                                     <div class='input-group-addon'>Value[{{$index}}]:</div>
@@ -53,30 +53,31 @@
                         </div>
                     </div>
                 </div>
-                <!-- Edit boolean option (without values) -->
-                <div class='row form-inline' ng-hide='option.values'>
+                <!-- Edit boolean ingredient (without values) -->
+                <div class='row form-inline' ng-hide='ingredient.values'>
                     <div class='checkbox'>
                         <label>Default:
-                            <input type='checkbox' ng-model='option.default' />
+                            <input type='checkbox' ng-model='ingredient.default' />
                         </label>
                     </div>
-                    <button class='btn btn-default' ng-click="add_value(option)">Add value</button>
+                    <button class='btn btn-default' ng-click="add_value(ingredient)">Add value</button>
                     <div class='input-group'>
                         <div class='input-group-addon'>€</div>
-                        <input type='text' class='form-control' ng-model='option.price' />
+                        <input type='text' class='form-control' ng-model='ingredient.price' />
                     </div>
                 </div>
             </div>
 
             <div class='col-sm-1'>
-                <button class='btn' ng-click="options.splice($index, 1)">Remove</button>
+                <button class='btn' ng-click="ingredients.splice($index, 1)">Remove</button>
             </div>
 
             <!-- Hidden save form -->
-            <form class='hidden' method='post' action='options'>
+            <form class='hidden' method='post' action='ingredients'>
                 {% endverbatim %}{% csrf_token %}{% verbatim %}
-                <input type='hidden' name='options' value="{{options}}"/>
+                <input type='hidden' name='ingredients' value="{{ingredients}}"/>
             </form>
+
         </div>
 
     </div>
@@ -88,6 +89,6 @@
 {% block scripts %}
 	{% load staticfiles %}
 	{{ block.super }}
-	<script src="{% static "script/options.js" %}"></script>
+	<script src="{% static "script/ingredients.js" %}"></script>
 
 {% endblock %}

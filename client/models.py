@@ -16,7 +16,7 @@ class Ingredient(models.Model):
 
 
     @classmethod
-    def get_options(cls):
+    def get_all(cls):
         """
             Creates an object which represents all the options in the database.
             returns [
@@ -36,68 +36,81 @@ class Ingredient(models.Model):
                 }
             ]
         """
-        # Build the options object
+        # Build the ingredients object
 
-        db_options = cls.objects.all()
-        options = []
+        ingredients = []
         for key, group in groupby(cls.objects.all(), lambda opt: opt.name):
 
             group = list(group)
 
             if len(group) > 1:
-                options.append({
+                ingredients.append({
                     "name": key,
                     "values" : [{
+                        "id": opt.id,
                         'value': opt.value,
                         'price': float(opt.price),
                         'default': opt.default
                     } for opt in group]
                 })
             else:
-                options.append({
+                ingredients.append({
+                    "id": group[0].id,
                     "name": key,
                     'price': float(group[0].price),
                     'default': group[0].default
                 })
 
-        # # Group by name
-        # for db_opt in db_options:
-        #     if db_opt.name in options:
-        #         options[db_opt.name].append({
-        #             'value': db_opt.value,    
-        #             'price': float(db_opt.price),    
-        #             'default': db_opt.default,    
-        #         })
-        #     elif db_opt.value:
-        #         options[db_opt.name] = [{
-        #             'value': db_opt.value,
-        #             'price': float(db_opt.price),
-        #             'default': db_opt.default,
-        #         }]    
-        #     else:
-        #         options[db_opt.name] = {
-        #             'name': db_opt.name,
-        #             'price': float(db_opt.price),
-        #             'default': db_opt.default,
-        #         }
-
-        return options
+        return ingredients
 
     @classmethod 
-    def set_options(cls, options):
-        """Flattens options, and stores the options"""
+    def set_all(cls, ingredients):
+        """Flattens ingredients, and stores the ingredients"""
 
-        # Just remove everything and write everything, bit ugly ;)
-        cls.objects.all().delete()
+        # A set of not updated id's
+        not_updated = {ingredient['id'] for ingredient in Ingredient.objects.all().values('id')}
 
-
-        for option in options:
+        for option in ingredients:
 
             if 'values' in option:
                 for value in option['values']:
-                    Ingredient(name=option['name'], **value).save()
+                    if 'id' in value:
+                        ing = cls.objects.get(id=value['id'])
+
+                        # Update
+                        ing.name = option['name']
+                        ing.value = value['value']
+                        ing.price = value['price']
+                        ing.default = (option['default'] == ing.value)
+
+                        not_updated.remove(ing.id)
+                    else:
+                        # create it
+                        ing = cls(name=option['name'], **value)
+
+                    ing.save()
             else:
-                Ingredient(**option).save()
+                if 'id' in option:
+                    ing = cls.objects.get(id=option['id'])
+
+                    # Update
+                    ing.name = option['name']
+                    ing.price = option['price']
+                    ing.default = option['default']
+
+                    not_updated.remove(ing.id)
+                else:
+                    # create it
+                    ing = cls(**option)
+
+                ing.save()
+
+        # remove the not updated ingredients.
+        if not_updated:
+            not_updated = cls.objects.filter(reduce(lambda x, y: x | y, [models.Q(id=id) for id in not_updated]))
+            not_updated.delete()
+
+
 
 
     def __unicode__(self):
@@ -113,7 +126,7 @@ class Order(models.Model):
     place = models.CharField(max_length=30)
     postal = models.CharField(max_length=8)
 
-    time_ordered = models.TimeField(auto_now_add=True)
+    time_ordered = models.DateTimeField(auto_now_add=True)
 
     # Status info
     ORDERED = "O"

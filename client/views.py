@@ -1,7 +1,9 @@
 from django.http import HttpResponse
 from django.core import serializers
+from django.utils.timesince import timesince
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout, decorators
+
 
 from client.models import Burger, Order, Ingredient, BurgerContents
 
@@ -50,7 +52,7 @@ def order(request, order_id=None):
             burger_model.save()
 
 
-        return redirect(order)
+        return redirect('/')
 
     elif order_id:
         return HttpResponse(json.dumps({
@@ -59,14 +61,30 @@ def order(request, order_id=None):
         }),mimetype='application/json')
 
     else:
-        return redirect('index')
+        return redirect('/')
 
 @decorators.login_required
 def orders(request):
+    return render(request, "orders.html")
+
+@decorators.login_required
+def order_list(request):
+
 
     if request.method == "POST":
-        pass
-    elif "application/json" in request.META["HTTP_ACCEPT"]:
+        req =  json.loads(request.body)
+
+        if 'update' in req:
+            order = Order.objects.get(id=req['update'])
+            for key, value in req['data'].iteritems():
+                setattr(order, key, value)
+
+            order.save()
+
+
+        return HttpResponse(json.dumps([]),mimetype='application/json')
+
+    else:
 
         # Get the parameters
         limit = ('limit' in request.GET) and request.GET['limit'] or 20
@@ -81,7 +99,7 @@ def orders(request):
             'street': order.street,
             'place': order.place,
             'postal': order.postal,
-            'time_ordered': repr(order.time_ordered),
+            'time_ordered': timesince(order.time_ordered),
 
             "burgers": [{
                     ingredient.name: {
@@ -94,31 +112,31 @@ def orders(request):
 
         return HttpResponse(json.dumps(orders),mimetype='application/json')
 
-    return render(request, "orders.html")
+
 
 @decorators.login_required
-def options(request):
+def ingredients(request):
     """Returns the burger options, ingredients, pricing enz."""
 
 
     if request.method == "POST":
-        options = json.loads(request.POST['options'])
+        ingredients = json.loads(request.POST['ingredients'])
 
-        Ingredient.set_options(options)
-        return redirect("/options")
+        Ingredient.set_all(ingredients)
+        return redirect("/ingredients")
 
 
     # Respond to a normal call
-    return render(request, "options.html")
+    return render(request, "ingredients.html")
 
 
 @decorators.login_required
-def option_values(request):
+def ingredients_list(request):
 
     # Respond to a ajax call
-    options = Ingredient.get_options()
+    ingredients = Ingredient.get_all()
 
-    return HttpResponse(json.dumps(options),mimetype='application/json')
+    return HttpResponse(json.dumps(ingredients),mimetype='application/json')
 
 
 @decorators.login_required
